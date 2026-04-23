@@ -1,0 +1,12 @@
+{
+  "theme": {
+    "current": "neon-purple"
+  },
+  "waybar": {
+    "top_enabled": true,
+    "dock_enabled": true
+  },
+  "system": {
+    "doctor_enabled": true
+  }
+}

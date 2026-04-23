@@ -1,0 +1,8 @@
+{
+  "menu.settings": "Settings",
+  "menu.theme": "Theme",
+  "menu.wallpaper": "Wallpaper",
+  "menu.waybar": "Waybar",
+  "menu.system": "System",
+  "menu.dev": "Developer"
+}

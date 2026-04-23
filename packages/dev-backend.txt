@@ -1,0 +1,16 @@
+git
+neovim
+tmux
+python
+python-pip
+go
+rustup
+docker
+docker-compose
+ripgrep
+fd
+fzf
+curl
+wget
+tree
+fastfetch

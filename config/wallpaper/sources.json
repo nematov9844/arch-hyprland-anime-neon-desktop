@@ -1,0 +1,16 @@
+{
+  "providers": [
+    {
+      "id": "local",
+      "name": "Local Wallpapers",
+      "enabled": true,
+      "type": "local"
+    },
+    {
+      "id": "wallhaven",
+      "name": "Wallhaven",
+      "enabled": true,
+      "type": "api"
+    }
+  ]
+}

@@ -1,0 +1,65 @@
+window {
+    margin: 0px;
+    padding: 0px;
+    border: 2px solid #8b5cf6;
+    border-radius: 16px;
+    background-color: rgba(11, 15, 23, 0.96);
+  }
+  
+  #outer-box {
+    margin: 0px;
+    padding: 18px;
+    background-color: transparent;
+  }
+  
+  #input {
+    margin: 0 0 14px 0;
+    padding: 14px 16px;
+    border: none;
+    border-radius: 12px;
+    background-color: rgba(22, 27, 34, 0.95);
+    color: #e5e7eb;
+    font-size: 15px;
+  }
+  
+  #input:focus {
+    outline: none;
+    box-shadow: none;
+  }
+  
+  #scroll {
+    margin: 0px;
+    padding: 0px;
+    background-color: transparent;
+  }
+  
+  #inner-box {
+    margin: 0px;
+    padding: 0px;
+    background-color: transparent;
+  }
+  
+  #entry {
+    padding: 12px 14px;
+    margin: 6px 0;
+    border-radius: 12px;
+    background-color: transparent;
+    color: #e5e7eb;
+  }
+  
+  #entry:selected {
+    background-color: rgba(139, 92, 246, 0.22);
+    color: #ffffff;
+  }
+  
+  #entry:hover {
+    background-color: rgba(34, 211, 238, 0.14);
+  }
+  
+  #img {
+    margin-right: 12px;
+  }
+  
+  #text {
+    color: inherit;
+  }

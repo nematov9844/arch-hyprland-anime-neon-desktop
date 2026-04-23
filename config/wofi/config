@@ -1,0 +1,15 @@
+width=700
+height=420
+location=center
+show=drun
+prompt=Search
+filter_rate=100
+allow_images=true
+image_size=28
+term=kitty
+gtk_dark=true
+no_actions=true
+hide_scroll=true
+print_command=false
+columns=1
+sort_order=alphabetical

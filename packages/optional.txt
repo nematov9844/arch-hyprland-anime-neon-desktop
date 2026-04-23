@@ -1,0 +1,10 @@
+blueman
+network-manager-applet
+polkit-gnome
+thunar
+firefox
+mpv
+mpvpaper
+imv
+btop
+lazygit

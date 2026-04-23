@@ -1,0 +1,13 @@
+git
+neovim
+tmux
+nodejs
+npm
+pnpm
+ripgrep
+fd
+fzf
+curl
+wget
+tree
+fastfetch

@@ -1,0 +1,18 @@
+{
+  "menu.local": "Local",
+  "menu.search": "Search Wallhaven",
+  "menu.random": "Random",
+  "menu.recent": "Recent",
+  "menu.favorites": "Favorites",
+  "menu.add_favorite": "Add Current to Favorites",
+  "menu.settings": "Settings",
+  "menu.video": "Video (Local)",
+  "settings.engine": "Engine",
+  "settings.provider": "Default Provider",
+  "settings.purity": "Purity",
+  "settings.categories": "Categories",
+  "settings.sorting": "Sorting",
+  "provider.wallhaven": "Wallhaven",
+  "engine.hyprpaper": "hyprpaper",
+  "engine.mpvpaper": "mpvpaper"
+}

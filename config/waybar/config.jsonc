@@ -1,0 +1,126 @@
+{
+    "layer": "top",
+    "position": "top",
+    "height": 38,
+    "spacing": 6,
+  
+    "modules-left": [
+      "custom/launcher",
+      "hyprland/workspaces",
+      "hyprland/window"
+    ],
+  
+    "modules-center": [
+      "clock"
+    ],
+  
+    "modules-right": [
+      "custom/wallpaper",
+      "custom/media",
+      "pulseaudio",
+      "network",
+      "battery",
+      "tray",
+      "custom/power",
+      "backlight",
+      "bluetooth"
+    ],
+  
+    "custom/launcher": {
+      "format": "",
+      "tooltip": false,
+      "on-click": "wofi --conf ~/.config/wofi/config --style ~/.config/wofi/style.css --show drun"
+    },
+  
+    "hyprland/workspaces": {
+      "format": "{name}",
+      "on-click": "activate",
+      "all-outputs": true,
+      "sort-by-number": true
+    },
+  
+    "hyprland/window": {
+      "format": "{}",
+      "rewrite": {
+        "": "Desktop"
+      },
+      "max-length": 45,
+      "separate-outputs": true
+    },
+  
+    "clock": {
+      "format": " {:%H:%M}",
+      "format-alt": " {:%a, %d %b}",
+      "tooltip-format": "<big>{:%H:%M}</big>\n<tt>{calendar}</tt>",
+      "calendar": {
+        "mode": "month",
+        "mode-mon-col": 3,
+        "weeks-pos": "right"
+      }
+    },
+  
+    "custom/media": {
+      "format": "",
+      "tooltip": false,
+      "on-click": "playerctl play-pause",
+      "on-click-right": "playerctl next",
+      "on-click-middle": "playerctl previous"
+    },
+    "custom/wallpaper": {
+      "format": "󰸉",
+      "tooltip": false,
+      "on-click": "sh -lc '$HOME/.local/bin/wallpaper-menu.sh'"
+    },
+  
+    "pulseaudio": {
+      "format": " {volume}%",
+      "format-muted": "󰖁 mute",
+      "tooltip": false,
+      "on-click": "pavucontrol",
+      "on-click-right": "$HOME/.local/bin/volume.sh mute"
+    },
+  
+    "network": {
+      "format-wifi": " {essid}",
+      "format-ethernet": "󰈀 wired",
+      "format-disconnected": "󰖪 offline",
+      "tooltip-format-wifi": "{essid}\n{ipaddr}",
+      "tooltip-format-ethernet": "{ifname}\n{ipaddr}",
+      "tooltip-format-disconnected": "No connection"
+    },
+  
+    "battery": {
+      "states": {
+        "warning": 30,
+        "critical": 15
+      },
+      "format": "{icon} {capacity}%",
+      "format-charging": " {capacity}%",
+      "format-plugged": " {capacity}%",
+      "format-icons": ["", "", "", "", ""],
+      "tooltip": false
+    },
+  
+    "tray": {
+      "spacing": 10
+    },
+  
+    "custom/power": {
+      "format": "",
+      "tooltip": false,
+      "on-click": "$HOME/.local/bin/power-menu.sh"
+    },
+    "backlight": {
+  "format": "󰃠 {percent}%",
+  "tooltip": false,
+  "on-scroll-up": "$HOME/.local/bin/brightness.sh up",
+  "on-scroll-down": "$HOME/.local/bin/brightness.sh down"
+},
+"bluetooth": {
+  "format": " {status}",
+  "format-disabled": "󰂲 off",
+  "format-connected": " on",
+  "tooltip": false,
+  "on-click": "blueman-manager"
+}
+  }

@@ -1,0 +1,22 @@
+{
+  "menu.settings": "Settings",
+  "menu.theme": "Theme",
+  "menu.wallpaper": "Wallpaper",
+  "menu.waybar": "Waybar",
+  "menu.system": "System",
+  "menu.dev": "Developer",
+  "menu.lock": "Lock",
+  "menu.power": "Power Menu",
+  "theme.switch": "Switch Theme",
+  "theme.current": "Current Theme",
+  "waybar.reload": "Reload Waybar",
+  "waybar.toggle_top": "Toggle Top Bar",
+  "waybar.toggle_dock": "Toggle Dock",
+  "system.reload_hypr": "Reload Hyprland",
+  "system.doctor": "Run Doctor",
+  "system.backup": "Create Backup",
+  "system.restore": "Restore Latest Backup",
+  "dev.open_project": "Open Project",
+  "dev.git_status": "Git Status",
+  "dev.update_project": "Run Update Script"
+}

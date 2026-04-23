@@ -1,0 +1,9 @@
+{
+  "providers": [
+    {
+      "id": "wallhaven",
+      "script": "plugins/providers/wallhaven.sh",
+      "enabled": true
+    }
+  ]
+}

@@ -1,0 +1,160 @@
+@import "themes/current.css";
+:root {
+  --border-none: none;
+  --bg-transparent: transparent;
+  --border-accent: 1px solid var(--accent);
+  --border-cyan-soft: 1px solid rgba(34, 211, 238, 0.35);
+  --bg-workspaces-hover: rgba(34, 211, 238, 0.16);
+  --bg-workspaces-active: linear-gradient(90deg, rgba(139, 92, 246, 0.90), rgba(34, 211, 238, 0.65));
+  --bg-workspaces-urgent: rgba(239, 68, 68, 0.22);
+  --bg-tooltip: rgba(11, 15, 23, 0.96);
+  --border-tooltip: 1px solid rgba(139, 92, 246, 0.35);
+}
+
+
+
+
+* {
+    font-family: JetBrainsMono Nerd Font, monospace;
+    font-size: 13px;
+    min-height: 0;
+    border: var(--border-none);
+    border-radius: 0;
+  }
+  
+  window#waybar {
+    background: var(--bg-transparent);
+    color: #e5e7eb;
+  }
+  
+  window#waybar.hidden {
+    opacity: 0.2;
+  }
+  
+  .modules-left,
+  .modules-center,
+  .modules-right {
+    margin-top: 6px;
+    margin-bottom: 6px;
+  }
+  
+  #custom-launcher,
+  #workspaces,
+  #window,
+  #clock,
+  #custom-media,
+  #pulseaudio,
+  #network,
+  #battery,
+  #tray,
+  #custom-power {
+    background: var(--bg);
+    border: var(--border-accent);
+    border-radius: 14px;
+    padding: 0 12px;
+    margin: 0 3px;
+    color: #e5e7eb;
+  }
+  
+  #custom-launcher {
+    color: #8b5cf6;
+    font-size: 16px;
+    padding: 0 14px;
+  }
+  
+  #custom-power {
+    color: #ef4444;
+    font-size: 15px;
+    padding: 0 14px;
+  }
+  
+  #custom-media {
+    color: #22d3ee;
+  }
+
+  #custom-wallpaper {
+    color: #f9fafb;
+  }
+  
+  #clock {
+    color: #ffffff;
+    font-weight: 700;
+    padding: 0 18px;
+    border: var(--border-cyan-soft);
+  }
+  
+  #window {
+    color: #22d3ee;
+    padding: 0 16px;
+  }
+  
+  #workspaces {
+    padding: 0 6px;
+  }
+  
+  #workspaces button {
+    color: #9ca3af;
+    padding: 0 10px;
+    margin: 6px 3px;
+    border-radius: 10px;
+    background: var(--bg-transparent);
+    transition: none;
+  }
+  
+  #workspaces button:hover {
+    background: var(--bg-workspaces-hover);
+    color: #ffffff;
+  }
+  
+  #workspaces button.active {
+    background: var(--bg-workspaces-active);
+    color: #ffffff;
+  }
+  
+  #workspaces button.urgent {
+    background: var(--bg-workspaces-urgent);
+    color: #ffffff;
+  }
+  
+  #pulseaudio {
+    color: #c084fc;
+  }
+  
+  #network {
+    color: #60a5fa;
+  }
+  
+  #battery {
+    color: #4ade80;
+  }
+  
+  #battery.warning {
+    color: #facc15;
+  }
+  
+  #battery.critical {
+    color: #ef4444;
+  }
+  
+  #tray {
+    padding: 0 10px;
+  }
+  
+  tooltip {
+    background: var(--bg-tooltip);
+    color: #e5e7eb;
+    border: var(--border-tooltip);
+    border-radius: 12px;
+  }
+  
+  tooltip label {
+    padding: 6px;
+  }
+
+  #backlight {
+    color: #facc15;
+  }
+  
+  #bluetooth {
+    color: #60a5fa;
+  }

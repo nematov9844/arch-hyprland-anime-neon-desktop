@@ -1,0 +1,17 @@
+{
+    "layer": "top",
+    "position": "bottom",
+    "height": 60,
+    "spacing": 10,
+  
+    "modules-center": [
+      "custom/dock"
+    ],
+  
+    "custom/dock": {
+      "format": "        ",
+      "on-click": "kitty",
+      "on-click-middle": "thunar",
+      "on-click-right": "firefox"
+    }
+  }
