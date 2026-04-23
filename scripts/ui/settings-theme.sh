@@ -2,6 +2,14 @@
 
 set -e
 
+kill_by_name() {
+  local name="$1"
+  local pid
+  for pid in $(pgrep -x "$name" 2>/dev/null || true); do
+    kill "$pid" 2>/dev/null || true
+  done
+}
+
 THEME=$(printf "neon-purple\ncrimson-night\nmono-dark" | \
   wofi --dmenu --prompt "Theme")
 
@@ -19,6 +27,7 @@ jq '.theme.current = $value' \
 
 mv "$TMP" "$HOME/.config/settings/config.json"
 
-pkill waybar || true
-waybar &
+kill_by_name waybar
+sleep 0.5
+waybar -c "$HOME/.config/waybar/config.jsonc" -s "$HOME/.config/waybar/style.css" >/dev/null 2>&1 &
 notify-send "Settings" "Theme switched to $THEME"

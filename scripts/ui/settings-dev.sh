@@ -7,13 +7,18 @@ CHOICE=$(printf "Open Project\nGit Status\nRun Update Script" | \
 
 [ -z "$CHOICE" ] && exit 0
 
+PROJECT_DIR="${ARCH_HYPR_REPO_DIR:-$PWD}"
+if [ ! -d "$PROJECT_DIR/.git" ]; then
+  PROJECT_DIR="$HOME"
+fi
+
 case "$CHOICE" in
   "Open Project")
-    kitty --hold -e bash -lc "cd $HOME/Projects/arch-hyprland-anime-neon-desktop && exec \$SHELL"
+    kitty --hold -e bash -lc "cd \"$PROJECT_DIR\" && exec \$SHELL"
     ;;
 
   "Git Status")
-    kitty --hold -e bash -lc "cd $HOME/Projects/arch-hyprland-anime-neon-desktop && git status && exec \$SHELL"
+    kitty --hold -e bash -lc "cd \"$PROJECT_DIR\" && git status && exec \$SHELL"
     ;;
 
   "Run Update Script")

@@ -1,16 +1,16 @@
-# arch-hyprland-anime-neon-desktop
+# ⚡ Arch Hyprland Anime Neon Desktop
 
 Repo: [nematov9844/arch-hyprland-anime-neon-desktop](https://github.com/nematov9844/arch-hyprland-anime-neon-desktop)
 
+A modern, minimal, powerful Hyprland-based desktop system.
+
 ## Features
 
-- Wallpaper system:
-  - local image wallpapers
-  - Wallhaven search
-  - recent history
-  - favorites
-  - settings menu
-  - local video wallpaper foundation
+- 🔥 Hyprland modular setup
+- 🎨 Waybar PRO (top + dock)
+- 🖼 Advanced wallpaper manager
+- ⚙️ Settings menu
+- 💻 Developer-friendly environment
 
 ## 🚀 Quick Install
 
@@ -21,6 +21,19 @@ curl -fsSL https://raw.githubusercontent.com/nematov9844/arch-hyprland-anime-neo
 ## 📦 Version
 
 Current version: `v1.0.0`
+
+## 🎮 Shortcuts
+
+- `SUPER + W` → Wallpaper menu
+- `SUPER + SHIFT + W` → Random wallpaper
+- `SUPER + ,` → Settings
+
+## 🧠 Why this project?
+
+- Clean structure
+- Easy customization
+- Developer-focused
+- Production-ready
 
 ## 📘 Documentation
 

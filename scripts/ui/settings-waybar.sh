@@ -2,6 +2,14 @@
 
 set -e
 
+kill_by_name() {
+  local name="$1"
+  local pid
+  for pid in $(pgrep -x "$name" 2>/dev/null || true); do
+    kill "$pid" 2>/dev/null || true
+  done
+}
+
 CHOICE=$(printf "Reload Waybar\nToggle Top Bar\nToggle Dock" | \
   wofi --dmenu --prompt "Waybar Settings")
 
@@ -11,7 +19,7 @@ CONFIG_FILE="$HOME/.config/settings/config.json"
 
 case "$CHOICE" in
   "Reload Waybar")
-    pkill waybar || true
+    kill_by_name waybar
     waybar &
     notify-send "Waybar" "Reloaded"
     ;;
@@ -22,13 +30,13 @@ case "$CHOICE" in
       TMP="$(mktemp)"
       jq '.waybar.top_enabled = false' "$CONFIG_FILE" > "$TMP"
       mv "$TMP" "$CONFIG_FILE"
-      pkill waybar || true
+      kill_by_name waybar
       notify-send "Waybar" "Top bar disabled"
     else
       TMP="$(mktemp)"
       jq '.waybar.top_enabled = true' "$CONFIG_FILE" > "$TMP"
       mv "$TMP" "$CONFIG_FILE"
-      pkill waybar || true
+      kill_by_name waybar
       waybar &
       notify-send "Waybar" "Top bar enabled"
     fi
@@ -40,7 +48,9 @@ case "$CHOICE" in
       TMP="$(mktemp)"
       jq '.waybar.dock_enabled = false' "$CONFIG_FILE" > "$TMP"
       mv "$TMP" "$CONFIG_FILE"
-      pkill -f "waybar -c $HOME/.config/waybar/dock.jsonc" || true
+      for pid in $(pgrep -f "waybar -c $HOME/.config/waybar/dock.jsonc" 2>/dev/null || true); do
+        kill "$pid" 2>/dev/null || true
+      done
       notify-send "Waybar" "Dock disabled"
     else
       TMP="$(mktemp)"

@@ -1,42 +1,33 @@
 # Changelog
 
-All notable changes to this project will be documented here.
-
 ## [1.0.0] - Initial Release
 
-### Added
-- Hyprland modular config
-- Waybar PRO (top bar + dock)
+### Features
+- Hyprland modular system
+- Waybar PRO (top + dock)
 - Wofi launcher
 - Kitty themed terminal
-- Hyprlock integration
+- Hyprlock
 
-### System Features
-- Screenshot system
+### System Tools
+- Screenshot
 - Volume control
 - Brightness control
 - Power menu
 
 ### UI
-- Theme system (neon-purple, crimson-night, mono-dark)
-- Consistent dark UI
+- Theme system
+- Settings menu
 
-### Wallpaper System
+### Wallpaper Manager
 - Local wallpapers
 - Wallhaven search
-- Cache system
-- Random wallpaper
+- Random
 - History
 - Favorites
-- Settings menu
-- Video wallpaper (local)
+- Settings
 
-### Dev Experience
-- Profile-based install
-- Packages system
-- Clean project structure
-
-### Tools
+### Dev Tools
 - install.sh
 - update.sh
 - bootstrap.sh
@@ -45,8 +36,7 @@ All notable changes to this project will be documented here.
 - restore.sh
 - uninstall.sh
 
-### Docs
-- README
-- installation guide
-- shortcuts
-- troubleshooting
+### System
+- Package profiles
+- Clean structure
+- Portable scripts

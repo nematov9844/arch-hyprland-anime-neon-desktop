@@ -1,4 +1,19 @@
-:root {
-  --accent: #9ca3af;
-  --bg: rgba(15, 15, 15, 0.9);
-}
+@define-color accent #9ca3af;
+@define-color bg rgba(15, 15, 15, 0.9);
+@define-color fg #e5e7eb;
+@define-color fg_bright #ffffff;
+@define-color fg_dim #9ca3af;
+@define-color purple #9ca3af;
+@define-color cyan #d1d5db;
+@define-color red #ef4444;
+@define-color yellow #facc15;
+@define-color blue #93c5fd;
+@define-color green #86efac;
+@define-color violet #cbd5e1;
+@define-color tooltip_bg rgba(20, 20, 20, 0.96);
+@define-color tooltip_border rgba(156, 163, 175, 0.35);
+@define-color ws_hover rgba(156, 163, 175, 0.16);
+@define-color ws_active_start rgba(156, 163, 175, 0.90);
+@define-color ws_active_end rgba(209, 213, 219, 0.65);
+@define-color ws_urgent rgba(239, 68, 68, 0.22);
+@define-color clock_border rgba(209, 213, 219, 0.35);

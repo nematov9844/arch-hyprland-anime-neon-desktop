@@ -1,15 +1,4 @@
 @import "themes/current.css";
-:root {
-  --border-none: none;
-  --bg-transparent: transparent;
-  --border-accent: 1px solid var(--accent);
-  --border-cyan-soft: 1px solid rgba(34, 211, 238, 0.35);
-  --bg-workspaces-hover: rgba(34, 211, 238, 0.16);
-  --bg-workspaces-active: linear-gradient(90deg, rgba(139, 92, 246, 0.90), rgba(34, 211, 238, 0.65));
-  --bg-workspaces-urgent: rgba(239, 68, 68, 0.22);
-  --bg-tooltip: rgba(11, 15, 23, 0.96);
-  --border-tooltip: 1px solid rgba(139, 92, 246, 0.35);
-}
 
 
 
@@ -18,13 +7,13 @@
     font-family: JetBrainsMono Nerd Font, monospace;
     font-size: 13px;
     min-height: 0;
-    border: var(--border-none);
+    border: none;
     border-radius: 0;
   }
   
   window#waybar {
-    background: var(--bg-transparent);
-    color: #e5e7eb;
+    background: transparent;
+    color: @fg;
   }
   
   window#waybar.hidden {
@@ -48,43 +37,43 @@
   #battery,
   #tray,
   #custom-power {
-    background: var(--bg);
-    border: var(--border-accent);
+    background: @bg;
+    border: 1px solid @accent;
     border-radius: 14px;
     padding: 0 12px;
     margin: 0 3px;
-    color: #e5e7eb;
+    color: @fg;
   }
   
   #custom-launcher {
-    color: #8b5cf6;
+    color: @purple;
     font-size: 16px;
     padding: 0 14px;
   }
   
   #custom-power {
-    color: #ef4444;
+    color: @red;
     font-size: 15px;
     padding: 0 14px;
   }
   
   #custom-media {
-    color: #22d3ee;
+    color: @cyan;
   }
 
   #custom-wallpaper {
-    color: #f9fafb;
+    color: @fg_bright;
   }
   
   #clock {
-    color: #ffffff;
+    color: @fg_bright;
     font-weight: 700;
     padding: 0 18px;
-    border: var(--border-cyan-soft);
+    border: 1px solid @clock_border;
   }
   
   #window {
-    color: #22d3ee;
+    color: @cyan;
     padding: 0 16px;
   }
   
@@ -93,47 +82,47 @@
   }
   
   #workspaces button {
-    color: #9ca3af;
+    color: @fg_dim;
     padding: 0 10px;
     margin: 6px 3px;
     border-radius: 10px;
-    background: var(--bg-transparent);
+    background: transparent;
     transition: none;
   }
   
   #workspaces button:hover {
-    background: var(--bg-workspaces-hover);
-    color: #ffffff;
+    background: @ws_hover;
+    color: @fg_bright;
   }
   
   #workspaces button.active {
-    background: var(--bg-workspaces-active);
-    color: #ffffff;
+    background: linear-gradient(90deg, @ws_active_start, @ws_active_end);
+    color: @fg_bright;
   }
   
   #workspaces button.urgent {
-    background: var(--bg-workspaces-urgent);
-    color: #ffffff;
+    background: @ws_urgent;
+    color: @fg_bright;
   }
   
   #pulseaudio {
-    color: #c084fc;
+    color: @violet;
   }
   
   #network {
-    color: #60a5fa;
+    color: @blue;
   }
   
   #battery {
-    color: #4ade80;
+    color: @green;
   }
   
   #battery.warning {
-    color: #facc15;
+    color: @yellow;
   }
   
   #battery.critical {
-    color: #ef4444;
+    color: @red;
   }
   
   #tray {
@@ -141,9 +130,9 @@
   }
   
   tooltip {
-    background: var(--bg-tooltip);
-    color: #e5e7eb;
-    border: var(--border-tooltip);
+    background: @tooltip_bg;
+    color: @fg;
+    border: 1px solid @tooltip_border;
     border-radius: 12px;
   }
   
@@ -152,9 +141,9 @@
   }
 
   #backlight {
-    color: #facc15;
+    color: @yellow;
   }
   
   #bluetooth {
-    color: #60a5fa;
+    color: @blue;
   }

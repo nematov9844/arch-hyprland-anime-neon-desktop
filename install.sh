@@ -46,6 +46,10 @@ copy_dir_contents_track() {
   local src_dir="$1"
   local dst_dir="$2"
   local rel
+  if [ ! -d "$src_dir" ]; then
+    echo "==> [WARN] Missing config directory, skipping: $src_dir"
+    return 0
+  fi
   find "$src_dir" -type f | while read -r src_file; do
     rel="${src_file#"$src_dir"/}"
     mkdir -p "$dst_dir/$(dirname "$rel")"
@@ -56,10 +60,60 @@ copy_dir_contents_track() {
 
 install_packages() {
   local file="$1"
+  local mode="${2:-required}"
+  local aur_helper="$3"
+
+  install_one_package() {
+    local pkg="$1"
+    local pkg_mode="$2"
+    local helper="$3"
+    local ans
+
+    if sudo pacman -Si "$pkg" >/dev/null 2>&1; then
+      sudo pacman -S --needed --noconfirm "$pkg"
+      return 0
+    fi
+
+    echo "==> [WARN] Package not found in official repo: $pkg"
+
+    if [ -n "$helper" ]; then
+      read -r -p "Try installing '$pkg' with $helper (AUR)? (y/N): " ans
+      if [[ "$ans" =~ ^[Yy]$ ]]; then
+        if "$helper" -S --needed "$pkg"; then
+          return 0
+        fi
+        echo "==> [WARN] AUR install failed: $pkg"
+      fi
+    fi
+
+    if [ "$pkg_mode" = "required" ]; then
+      echo "==> [ERR] Required package was not installed: $pkg"
+      exit 1
+    fi
+
+    echo "==> [WARN] Skipping optional package: $pkg"
+    return 0
+  }
+
   while read -r pkg; do
     [ -z "$pkg" ] && continue
-    sudo pacman -S --needed --noconfirm "$pkg"
+    case "$pkg" in
+      \#*) continue ;;
+    esac
+    install_one_package "$pkg" "$mode" "$aur_helper"
   done < "$file"
+}
+
+detect_aur_helper() {
+  if command -v yay >/dev/null 2>&1; then
+    echo "yay"
+    return
+  fi
+  if command -v paru >/dev/null 2>&1; then
+    echo "paru"
+    return
+  fi
+  echo ""
 }
 
 case "$PROFILE" in
@@ -82,30 +136,49 @@ case "$PROFILE" in
     ;;
 esac
 
-echo "==> Installing base packages..."
-install_packages "$PROJECT_DIR/packages/base.txt"
+AUR_HELPER="$(detect_aur_helper)"
 
-echo "==> Installing UI packages..."
-install_packages "$PROJECT_DIR/packages/ui.txt"
+echo "==> Installing base packages..."
+install_packages "$PROJECT_DIR/packages/base.txt" "required" "$AUR_HELPER"
+
+read -r -p "Install UI packages? (Y/n): " ui_ans
+if [[ ! "$ui_ans" =~ ^[Nn]$ ]]; then
+  echo "==> Installing UI packages..."
+  install_packages "$PROJECT_DIR/packages/ui.txt" "optional" "$AUR_HELPER"
+else
+  echo "==> Skipping UI packages"
+fi
 
 echo "$PROFILE_MESSAGE"
 case "$PROFILE" in
   frontend)
-    install_packages "$PROJECT_DIR/packages/dev-frontend.txt"
+    read -r -p "Install frontend dev packages? (Y/n): " fe_ans
+    if [[ ! "$fe_ans" =~ ^[Nn]$ ]]; then
+      install_packages "$PROJECT_DIR/packages/dev-frontend.txt" "optional" "$AUR_HELPER"
+    fi
     ;;
   backend)
-    install_packages "$PROJECT_DIR/packages/dev-backend.txt"
+    read -r -p "Install backend dev packages? (Y/n): " be_ans
+    if [[ ! "$be_ans" =~ ^[Nn]$ ]]; then
+      install_packages "$PROJECT_DIR/packages/dev-backend.txt" "optional" "$AUR_HELPER"
+    fi
     ;;
   full)
-    install_packages "$PROJECT_DIR/packages/dev-frontend.txt"
-    install_packages "$PROJECT_DIR/packages/dev-backend.txt"
+    read -r -p "Install frontend dev packages? (Y/n): " fe_ans
+    if [[ ! "$fe_ans" =~ ^[Nn]$ ]]; then
+      install_packages "$PROJECT_DIR/packages/dev-frontend.txt" "optional" "$AUR_HELPER"
+    fi
+    read -r -p "Install backend dev packages? (Y/n): " be_ans
+    if [[ ! "$be_ans" =~ ^[Nn]$ ]]; then
+      install_packages "$PROJECT_DIR/packages/dev-backend.txt" "optional" "$AUR_HELPER"
+    fi
     ;;
 esac
 
 read -r -p "Install optional packages? (y/N): " opt
 if [[ "$opt" =~ ^[Yy]$ ]]; then
   echo "==> Installing optional packages..."
-  install_packages "$PROJECT_DIR/packages/optional.txt"
+  install_packages "$PROJECT_DIR/packages/optional.txt" "optional" "$AUR_HELPER"
 fi
 
 init_manifest
