@@ -2,10 +2,6 @@
 
 set -e
 
-for pid in $(pgrep -x waybar 2>/dev/null || true); do
-  kill "$pid" 2>/dev/null || true
-done
-
 THEME=$(printf "neon-purple\ncrimson-night\nmono-dark" | \
   wofi --dmenu --prompt "Waybar Theme")
 
@@ -14,4 +10,4 @@ THEME=$(printf "neon-purple\ncrimson-night\nmono-dark" | \
 cp "$HOME/.config/waybar/themes/$THEME.css" \
   "$HOME/.config/waybar/themes/current.css"
 
-waybar &
+"$HOME/.local/bin/waybar-restart.sh"

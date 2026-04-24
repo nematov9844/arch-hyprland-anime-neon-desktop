@@ -9,8 +9,12 @@ A modern, minimal, powerful Hyprland-based desktop system.
 - 🔥 Hyprland modular setup
 - 🎨 Waybar PRO (top + dock)
 - 🖼 Advanced wallpaper manager
-- ⚙️ Settings menu
+- ⚙️ Settings Center app-first control UI
 - 💻 Developer-friendly environment
+
+## Settings Center Migration
+
+Settings Center is now the main control UI. Legacy Wofi menus are kept as compatibility fallback.
 
 ## 🚀 Quick Install
 
@@ -24,9 +28,9 @@ Current version: `v1.0.0`
 
 ## 🎮 Shortcuts
 
-- `SUPER + W` → Wallpaper menu
+- `SUPER + W` → Settings Center
 - `SUPER + SHIFT + W` → Random wallpaper
-- `SUPER + ,` → Settings
+- `SUPER + ,` → Settings Center
 
 ## 🧠 Why this project?
 

@@ -28,6 +28,17 @@ check_file() {
   fi
 }
 
+check_optional_file() {
+  local file="$1"
+  if [ -f "$file" ]; then
+    echo "[OK] optional file exists: $file"
+    ok=$((ok + 1))
+  else
+    echo "[WARN] optional file missing: $file"
+    warn=$((warn + 1))
+  fi
+}
+
 check_dir() {
   local dir="$1"
   if [ -d "$dir" ]; then
@@ -80,12 +91,27 @@ check_cmd brightnessctl
 check_cmd notify-send
 check_cmd jq
 check_cmd curl
+if command -v mpvpaper >/dev/null 2>&1; then
+  echo "[OK] optional command found: mpvpaper"
+  ok=$((ok + 1))
+else
+  echo "[WARN] optional command missing: mpvpaper"
+  warn=$((warn + 1))
+fi
+if command -v ffmpeg >/dev/null 2>&1; then
+  echo "[OK] optional command found: ffmpeg"
+  ok=$((ok + 1))
+else
+  echo "[WARN] optional command missing: ffmpeg (video thumbnail fallback ishlaydi)"
+  warn=$((warn + 1))
+fi
 
 echo
 echo "-- Checking config files --"
 check_file "$HOME/.config/hypr/hyprland.conf"
 check_file "$HOME/.config/hypr/binds.conf"
 check_file "$HOME/.config/hypr/autostart.conf"
+check_file "$HOME/.config/hypr/hyprpaper.conf"
 check_file "$HOME/.config/waybar/config.jsonc"
 check_file "$HOME/.config/waybar/style.css"
 check_file "$HOME/.config/wofi/config"
@@ -97,7 +123,10 @@ check_file "$HOME/.config/settings/labels.json"
 check_file "$HOME/.config/arch-hyprland/wallpaper/config.json"
 check_file "$HOME/.config/arch-hyprland/wallpaper/sources.json"
 check_file "$HOME/.config/arch-hyprland/wallpaper/state.json"
+check_file "$HOME/.config/arch-hyprland/wallpaper/history.json"
+check_file "$HOME/.config/arch-hyprland/wallpaper/favorites.json"
 check_file "$HOME/.config/arch-hyprland/wallpaper/labels.json"
+check_file "$HOME/.config/arch-hyprland/manifest.json"
 
 echo
 echo "-- Checking script files --"
@@ -105,18 +134,31 @@ check_file "$HOME/.local/bin/power-menu.sh"
 check_file "$HOME/.local/bin/screenshot.sh"
 check_file "$HOME/.local/bin/volume.sh"
 check_file "$HOME/.local/bin/brightness.sh"
+check_file "$HOME/.local/bin/settings-center"
 check_file "$HOME/.local/bin/wallpaper-apply.sh"
 check_file "$HOME/.local/bin/wallpaper-local.sh"
 check_file "$HOME/.local/bin/wallpaper-fetch.sh"
 check_file "$HOME/.local/bin/wallpaper-random.sh"
-check_file "$HOME/.local/bin/wallpaper-menu.sh"
+check_file "$HOME/.local/bin/wallpaper-history.sh"
+check_file "$HOME/.local/bin/wallpaper-favorite-add.sh"
+check_file "$HOME/.local/bin/wallpaper-favorites.sh"
 check_file "$HOME/.local/bin/wallpaper-settings.sh"
 check_file "$HOME/.local/bin/wallpaper-video.sh"
-check_file "$HOME/.local/bin/settings-menu.sh"
-check_file "$HOME/.local/bin/settings-theme.sh"
-check_file "$HOME/.local/bin/settings-waybar.sh"
-check_file "$HOME/.local/bin/settings-system.sh"
-check_file "$HOME/.local/bin/settings-dev.sh"
+check_file "$HOME/.local/bin/wallpaper-video-apply.sh"
+check_file "$HOME/.local/bin/wallpaper-video-local.sh"
+check_file "$HOME/.local/bin/wallpaper-stop-video.sh"
+check_optional_file "$HOME/.local/bin/wallpaper-menu.sh"
+check_optional_file "$HOME/.local/bin/settings-menu.sh"
+check_optional_file "$HOME/.local/bin/settings-theme.sh"
+check_optional_file "$HOME/.local/bin/settings-waybar.sh"
+check_file "$HOME/.local/bin/start-waybar.sh"
+check_file "$HOME/.local/bin/waybar-restart.sh"
+check_optional_file "$HOME/.local/bin/settings-system.sh"
+check_optional_file "$HOME/.local/bin/settings-dev.sh"
+check_file "$HOME/.local/bin/arch-hypr-doctor"
+check_file "$HOME/.local/bin/arch-hypr-backup"
+check_file "$HOME/.local/bin/arch-hypr-restore"
+check_file "$HOME/.local/bin/arch-hypr-update"
 
 echo
 echo "-- Checking directories --"
@@ -124,10 +166,13 @@ check_dir "$HOME/Pictures/Screenshots"
 check_dir "$HOME/.config/waybar/themes"
 check_dir "$HOME/.local/share/arch-hyprland/wallpapers/static"
 check_dir "$HOME/.local/share/arch-hyprland/wallpapers/cache"
+check_dir "$HOME/.local/share/arch-hyprland/wallpapers/live"
+check_dir "$HOME/.local/share/arch-hyprland/wallpapers/previews"
 
 echo
 echo "-- Checking permissions --"
 for script in \
+  "$HOME/.local/bin/settings-center" \
   "$HOME/.local/bin/power-menu.sh" \
   "$HOME/.local/bin/screenshot.sh" \
   "$HOME/.local/bin/volume.sh" \
@@ -137,13 +182,25 @@ for script in \
   "$HOME/.local/bin/wallpaper-fetch.sh" \
   "$HOME/.local/bin/wallpaper-random.sh" \
   "$HOME/.local/bin/wallpaper-menu.sh" \
+  "$HOME/.local/bin/wallpaper-history.sh" \
+  "$HOME/.local/bin/wallpaper-favorite-add.sh" \
+  "$HOME/.local/bin/wallpaper-favorites.sh" \
   "$HOME/.local/bin/wallpaper-settings.sh" \
   "$HOME/.local/bin/wallpaper-video.sh" \
+  "$HOME/.local/bin/wallpaper-video-apply.sh" \
+  "$HOME/.local/bin/wallpaper-video-local.sh" \
+  "$HOME/.local/bin/wallpaper-stop-video.sh" \
   "$HOME/.local/bin/settings-menu.sh" \
   "$HOME/.local/bin/settings-theme.sh" \
   "$HOME/.local/bin/settings-waybar.sh" \
+  "$HOME/.local/bin/start-waybar.sh" \
+  "$HOME/.local/bin/waybar-restart.sh" \
   "$HOME/.local/bin/settings-system.sh" \
-  "$HOME/.local/bin/settings-dev.sh"
+  "$HOME/.local/bin/settings-dev.sh" \
+  "$HOME/.local/bin/arch-hypr-doctor" \
+  "$HOME/.local/bin/arch-hypr-backup" \
+  "$HOME/.local/bin/arch-hypr-restore" \
+  "$HOME/.local/bin/arch-hypr-update"
 do
   if [ -x "$script" ]; then
     echo "[OK] executable: $script"
@@ -184,6 +241,7 @@ fi
 echo
 echo "-- Checking shell script syntax --"
 for script in \
+  "$HOME/.local/bin/settings-center" \
   "$HOME/.local/bin/power-menu.sh" \
   "$HOME/.local/bin/screenshot.sh" \
   "$HOME/.local/bin/volume.sh" \
@@ -193,14 +251,35 @@ for script in \
   "$HOME/.local/bin/wallpaper-fetch.sh" \
   "$HOME/.local/bin/wallpaper-random.sh" \
   "$HOME/.local/bin/wallpaper-menu.sh" \
+  "$HOME/.local/bin/wallpaper-history.sh" \
+  "$HOME/.local/bin/wallpaper-favorite-add.sh" \
+  "$HOME/.local/bin/wallpaper-favorites.sh" \
   "$HOME/.local/bin/wallpaper-settings.sh" \
   "$HOME/.local/bin/wallpaper-video.sh" \
+  "$HOME/.local/bin/wallpaper-video-apply.sh" \
+  "$HOME/.local/bin/wallpaper-video-local.sh" \
+  "$HOME/.local/bin/wallpaper-stop-video.sh" \
   "$HOME/.local/bin/settings-menu.sh" \
   "$HOME/.local/bin/settings-theme.sh" \
   "$HOME/.local/bin/settings-waybar.sh" \
+  "$HOME/.local/bin/start-waybar.sh" \
+  "$HOME/.local/bin/waybar-restart.sh" \
   "$HOME/.local/bin/settings-system.sh" \
-  "$HOME/.local/bin/settings-dev.sh"
+  "$HOME/.local/bin/settings-dev.sh" \
+  "$HOME/.local/bin/arch-hypr-doctor" \
+  "$HOME/.local/bin/arch-hypr-backup" \
+  "$HOME/.local/bin/arch-hypr-restore" \
+  "$HOME/.local/bin/arch-hypr-update"
 do
+  if [ ! -f "$script" ]; then
+    case "$script" in
+      "$HOME/.local/bin/settings-menu.sh"|"$HOME/.local/bin/wallpaper-menu.sh"|"$HOME/.local/bin/settings-theme.sh"|"$HOME/.local/bin/settings-waybar.sh"|"$HOME/.local/bin/settings-system.sh"|"$HOME/.local/bin/settings-dev.sh")
+        echo "[WARN] optional script missing, syntax skipped: $script"
+        warn=$((warn + 1))
+        continue
+        ;;
+    esac
+  fi
   if bash -n "$script" >/dev/null 2>&1; then
     echo "[OK] shell syntax valid: $script"
     ok=$((ok + 1))

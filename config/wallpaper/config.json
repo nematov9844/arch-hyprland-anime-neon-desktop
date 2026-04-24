@@ -3,7 +3,7 @@
   "monitor": "",
   "config_dir": "$HOME/.config/arch-hyprland/wallpaper",
   "state_file": "$HOME/.config/arch-hyprland/wallpaper/state.json",
-  "static_dir": "$HOME/.local/share/arch-hyprland/wallpapers/static",
+  "static_dir": "$HOME/.local/share/arch-hyprland/wallpapers/library",
   "cache_dir": "$HOME/.local/share/arch-hyprland/wallpapers/cache",
   "live_dir": "$HOME/.local/share/arch-hyprland/wallpapers/live",
   "favorites_dir": "$HOME/.local/share/arch-hyprland/wallpapers/favorites",
@@ -18,5 +18,17 @@
     "categories": "111",
     "sorting": "relevance",
     "topRange": "1M"
+  },
+  "pexels": {
+    "api_key": "",
+    "default_query": "anime wallpaper"
+  },
+  "unsplash": {
+    "api_key": "",
+    "default_query": "anime wallpaper"
+  },
+  "pixabay": {
+    "api_key": "",
+    "default_query": "anime wallpaper"
   }
 }

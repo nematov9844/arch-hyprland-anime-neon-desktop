@@ -41,6 +41,7 @@ wallpaper {
 EOF
 
 pkill hyprpaper >/dev/null 2>&1 || true
+pkill mpvpaper >/dev/null 2>&1 || true
 hyprpaper >/dev/null 2>&1 &
 sleep 1
 

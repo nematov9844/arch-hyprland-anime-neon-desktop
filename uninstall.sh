@@ -9,26 +9,19 @@ if [ ! -f "$MANIFEST" ]; then
   exit 1
 fi
 
-echo "==> Safe uninstall (manifest-based)"
+echo "==> Safe uninstall"
 read -rp "Continue? (y/N): " confirm
 
 [[ "$confirm" =~ ^[Yy]$ ]] || exit 0
 
-# Remove files
 jq -r '.installed_files[]' "$MANIFEST" | while read -r file; do
-  if [ -e "$file" ]; then
-    echo "Removing file: $file"
-    rm -f "$file"
-  fi
+  [ -e "$file" ] && rm -f "$file"
 done
 
-# Remove dirs (only if empty)
-jq -r '.installed_dirs[]' "$MANIFEST" | while read -r dir; do
-  if [ -d "$dir" ]; then
-    rmdir "$dir" 2>/dev/null || true
-  fi
+jq -r '.installed_dirs[]' "$MANIFEST" | tac | while read -r dir; do
+  [ -d "$dir" ] && rmdir "$dir" 2>/dev/null || true
 done
 
 rm -f "$MANIFEST"
 
-echo "==> Uninstall completed safely"
+echo "==> Safe uninstall completed"

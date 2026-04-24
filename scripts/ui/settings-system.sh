@@ -2,7 +2,7 @@
 
 set -e
 
-CHOICE=$(printf "Reload Hyprland\nRun Doctor\nCreate Backup\nRestore Latest Backup" | \
+CHOICE=$(printf "Reload Hyprland\nRun Doctor\nCreate Backup\nRestore Latest Backup\nRun Update" | \
   wofi --dmenu --prompt "System Settings")
 
 [ -z "$CHOICE" ] && exit 0
@@ -23,5 +23,9 @@ case "$CHOICE" in
 
   "Restore Latest Backup")
     kitty --hold -e arch-hypr-restore
+    ;;
+
+  "Run Update")
+    kitty --hold -e arch-hypr-update
     ;;
 esac

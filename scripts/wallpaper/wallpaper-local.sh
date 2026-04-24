@@ -2,10 +2,16 @@
 
 set -e
 
-DIR="$HOME/.local/share/arch-hyprland/wallpapers/static"
+PRIMARY_DIR="$HOME/.local/share/arch-hyprland/wallpapers/library"
+LEGACY_DIR="$HOME/.local/share/arch-hyprland/wallpapers/static"
+DIR="$PRIMARY_DIR"
 
 if [ ! -d "$DIR" ]; then
-  notify-send "Wallpaper" "Local wallpaper directory not found"
+  DIR="$LEGACY_DIR"
+fi
+
+if [ ! -d "$DIR" ]; then
+  notify-send "Wallpaper" "Local wallpaper directory topilmadi"
   exit 1
 fi
 

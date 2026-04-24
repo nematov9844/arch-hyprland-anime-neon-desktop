@@ -4,9 +4,45 @@
   },
   "waybar": {
     "top_enabled": true,
-    "dock_enabled": true
+    "dock_enabled": false,
+    "modules": {
+      "bluetooth": true,
+      "network": true,
+      "battery": true,
+      "clock": true,
+      "tray": true,
+      "backlight": true,
+      "volume": true,
+      "settings": true,
+      "power": true
+    }
   },
   "system": {
     "doctor_enabled": true
+  },
+  "appearance": {
+    "panel": {
+      "background_mode": "blur"
+    },
+    "lockscreen": {
+      "layout": "center",
+      "style": "neon-anime",
+      "show_greeting": true,
+      "show_clock": true,
+      "show_date": true,
+      "show_power_hint": true
+    }
+  },
+  "effects": {
+    "blur": {
+      "enabled": true,
+      "size": 7,
+      "passes": 3
+    },
+    "opacity": {
+      "active": 1.0,
+      "inactive": 0.85
+    },
+    "lockscreen_blur": true
   }
 }

@@ -1,0 +1,9 @@
+/* generated panel mode (default: solid) */
+window#waybar {
+  background: transparent;
+}
+
+#custom-launcher, #workspaces, #window, #clock, #custom-media, #pulseaudio, #network, #battery, #tray, #custom-settings, #custom-power, #backlight, #bluetooth {
+  background: @bg;
+  border-color: @accent;
+}

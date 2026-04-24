@@ -2,11 +2,16 @@
 
 set -e
 
-echo "==> Updating project..."
+PROJECT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
-git pull origin main
+echo "==> Updating installed configs..."
 
-echo "==> Re-running installer..."
-bash install.sh
+bash "$PROJECT_DIR/install.sh" "${1:-default}"
+
+echo "==> Reloading Hyprland..."
+hyprctl reload
+
+echo "==> Restarting Waybar..."
+"$HOME/.local/bin/waybar-restart.sh" || true
 
 echo "==> Done"

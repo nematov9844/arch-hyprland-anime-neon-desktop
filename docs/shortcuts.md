@@ -42,10 +42,16 @@ Repo: [nematov9844/arch-hyprland-anime-neon-desktop](https://github.com/nematov9
 | Launcher    | `SUPER + D`         |
 | Power menu  | `SUPER + SHIFT + E` |
 | Lock screen | `SUPER + L`         |
-| Wallpaper menu | `SUPER + W` |
+| Settings Center | `SUPER + W` |
+| Settings Center | `SUPER + ,` |
 | Random wallpaper | `SUPER + SHIFT + W` |
 
 ---
+
+## 🔁 Legacy Compatibility
+
+Legacy Wofi menus (`settings-menu.sh`, `wallpaper-menu.sh`) are still installed as compatibility fallback,
+but they now redirect to `settings-center`.
 
 ## 📸 Screenshots
 

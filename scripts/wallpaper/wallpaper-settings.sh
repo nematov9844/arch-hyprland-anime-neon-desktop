@@ -15,9 +15,12 @@ get_label() {
   jq -r --arg key "$key" '.[$key] // $key' "$LABELS_FILE" 2>/dev/null || echo "$key"
 }
 
-MENU=$(printf "%s\n%s\n%s\n%s\n%s" \
+MENU=$(printf "%s\n%s\n%s\n%s\n%s\n%s\n%s\n%s" \
   "$(get_label menu.settings): $(get_label settings.engine)" \
   "$(get_label menu.settings): $(get_label settings.provider)" \
+  "Wallpaper Settings: Pexels API Key" \
+  "Wallpaper Settings: Unsplash API Key" \
+  "Wallpaper Settings: Pixabay API Key" \
   "$(get_label menu.settings): $(get_label settings.purity)" \
   "$(get_label menu.settings): $(get_label settings.categories)" \
   "$(get_label menu.settings): $(get_label settings.sorting)" \
@@ -35,12 +38,36 @@ case "$MENU" in
     notify-send "Wallpaper" "Engine set to $VALUE"
     ;;
   *"Default Provider")
-    VALUE=$(printf "wallhaven\nlocal" | wofi --dmenu --prompt "Provider")
+    VALUE=$(printf "wallhaven\npexels\nunsplash\npixabay\nlocal" | wofi --dmenu --prompt "Provider")
     [ -z "$VALUE" ] && exit 0
     TMP="$(mktemp)"
     jq '.default_provider = $value' --arg value "$VALUE" "$CONFIG_FILE" > "$TMP"
     mv "$TMP" "$CONFIG_FILE"
     notify-send "Wallpaper" "Provider set to $VALUE"
+    ;;
+  *"Pexels API Key")
+    VALUE=$(wofi --dmenu --prompt "Enter Pexels API Key")
+    [ -z "$VALUE" ] && exit 0
+    TMP="$(mktemp)"
+    jq '.pexels.api_key = $value' --arg value "$VALUE" "$CONFIG_FILE" > "$TMP"
+    mv "$TMP" "$CONFIG_FILE"
+    notify-send "Wallpaper" "Pexels API key saqlandi"
+    ;;
+  *"Unsplash API Key")
+    VALUE=$(wofi --dmenu --prompt "Enter Unsplash Access Key")
+    [ -z "$VALUE" ] && exit 0
+    TMP="$(mktemp)"
+    jq '.unsplash.api_key = $value' --arg value "$VALUE" "$CONFIG_FILE" > "$TMP"
+    mv "$TMP" "$CONFIG_FILE"
+    notify-send "Wallpaper" "Unsplash API key saqlandi"
+    ;;
+  *"Pixabay API Key")
+    VALUE=$(wofi --dmenu --prompt "Enter Pixabay API Key")
+    [ -z "$VALUE" ] && exit 0
+    TMP="$(mktemp)"
+    jq '.pixabay.api_key = $value' --arg value "$VALUE" "$CONFIG_FILE" > "$TMP"
+    mv "$TMP" "$CONFIG_FILE"
+    notify-send "Wallpaper" "Pixabay API key saqlandi"
     ;;
   *"Purity")
     VALUE=$(printf "100\n110\n111\n" | wofi --dmenu --prompt "Purity")

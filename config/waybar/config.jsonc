@@ -16,6 +16,7 @@
   
     "modules-right": [
       "custom/wallpaper",
+      "custom/settings",
       "custom/media",
       "pulseaudio",
       "network",
@@ -27,7 +28,7 @@
     ],
   
     "custom/launcher": {
-      "format": "",
+      "format": "",
       "tooltip": false,
       "on-click": "wofi --conf ~/.config/wofi/config --style ~/.config/wofi/style.css --show drun"
     },
@@ -69,7 +70,7 @@
     "custom/wallpaper": {
       "format": "󰸉",
       "tooltip": false,
-      "on-click": "sh -lc '$HOME/.local/bin/wallpaper-menu.sh'"
+      "on-click": "$HOME/.local/bin/settings-center"
     },
   
     "pulseaudio": {
@@ -104,7 +105,12 @@
     "tray": {
       "spacing": 10
     },
-  
+    "custom/settings": {
+      "format": "󰒓",
+      "tooltip": false,
+      "on-click": "$HOME/.local/bin/settings-center"
+    },
+
     "custom/power": {
       "format": "",
       "tooltip": false,

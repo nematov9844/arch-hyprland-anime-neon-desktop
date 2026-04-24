@@ -188,17 +188,18 @@ mkdir_track "$HOME/.config/hypr"
 mkdir_track "$HOME/.config/waybar"
 mkdir_track "$HOME/.config/wofi"
 mkdir_track "$HOME/.config/kitty"
-mkdir_track "$HOME/.config/hyprlock"
-mkdir_track "$HOME/.config/hypridle"
 mkdir_track "$HOME/.config/settings"
 mkdir_track "$HOME/.local/bin"
+mkdir_track "$HOME/.config/arch-hyprland"
 mkdir_track "$HOME/.config/arch-hyprland/wallpaper"
-mkdir_track "$HOME/.local/share/arch-hyprland/wallpapers"
 mkdir_track "$HOME/.local/share/arch-hyprland/wallpapers/static"
+mkdir_track "$HOME/.local/share/arch-hyprland/wallpapers/library"
 mkdir_track "$HOME/.local/share/arch-hyprland/wallpapers/cache"
 mkdir_track "$HOME/.local/share/arch-hyprland/wallpapers/live"
 mkdir_track "$HOME/.local/share/arch-hyprland/wallpapers/previews"
 mkdir_track "$HOME/.local/share/arch-hyprland/wallpapers/favorites"
+mkdir_track "$HOME/.local/share/arch-hyprland/apps"
+mkdir_track "$HOME/.local/share/arch-hyprland/localization"
 
 
 
@@ -209,16 +210,60 @@ echo "==> Backing up old configs..."
 [ -d "$HOME/.config/kitty" ] && cp -rn "$HOME/.config/kitty" "$HOME/.config/kitty.backup.$(date +%s)" || true
 
 echo "==> Copying configs..."
+WALL_CFG_TARGET="$HOME/.config/arch-hyprland/wallpaper/config.json"
+OLD_PEXELS_KEY=""
+OLD_UNSPLASH_KEY=""
+OLD_PIXABAY_KEY=""
+if [ -f "$WALL_CFG_TARGET" ]; then
+  OLD_PEXELS_KEY="$(jq -r '.pexels.api_key // ""' "$WALL_CFG_TARGET" 2>/dev/null || echo "")"
+  OLD_UNSPLASH_KEY="$(jq -r '.unsplash.api_key // ""' "$WALL_CFG_TARGET" 2>/dev/null || echo "")"
+  OLD_PIXABAY_KEY="$(jq -r '.pixabay.api_key // ""' "$WALL_CFG_TARGET" 2>/dev/null || echo "")"
+fi
 copy_dir_contents_track "$PROJECT_DIR/config/hypr" "$HOME/.config/hypr"
 copy_dir_contents_track "$PROJECT_DIR/config/waybar" "$HOME/.config/waybar"
 copy_dir_contents_track "$PROJECT_DIR/config/wofi" "$HOME/.config/wofi"
 copy_dir_contents_track "$PROJECT_DIR/config/kitty" "$HOME/.config/kitty"
-copy_dir_contents_track "$PROJECT_DIR/config/hyprlock" "$HOME/.config/hypr"
-copy_dir_contents_track "$PROJECT_DIR/config/hypridle" "$HOME/.config/hypr"
 copy_dir_contents_track "$PROJECT_DIR/config/wallpaper" "$HOME/.config/arch-hyprland/wallpaper"
+if [ -f "$WALL_CFG_TARGET" ]; then
+  TMP_WALL_CFG="$(mktemp)"
+  jq --arg p "$OLD_PEXELS_KEY" \
+     --arg u "$OLD_UNSPLASH_KEY" \
+     --arg x "$OLD_PIXABAY_KEY" \
+     '.pexels.api_key = (if $p != "" then $p else .pexels.api_key end)
+      | .unsplash.api_key = (if $u != "" then $u else .unsplash.api_key end)
+      | .pixabay.api_key = (if $x != "" then $x else .pixabay.api_key end)' \
+     "$WALL_CFG_TARGET" > "$TMP_WALL_CFG" && mv "$TMP_WALL_CFG" "$WALL_CFG_TARGET"
+fi
 copy_dir_contents_track "$PROJECT_DIR/config/settings" "$HOME/.config/settings"
+if [ -f "$PROJECT_DIR/config/hyprlock/hyprlock.conf" ]; then
+  copy_file_track "$PROJECT_DIR/config/hyprlock/hyprlock.conf" "$HOME/.config/hypr/hyprlock.conf"
+fi
+if [ -f "$PROJECT_DIR/config/hypridle/hypridle.conf" ]; then
+  copy_file_track "$PROJECT_DIR/config/hypridle/hypridle.conf" "$HOME/.config/hypr/hypridle.conf"
+fi
+if [ -f "$PROJECT_DIR/config/hypr/hyprpaper.conf" ]; then
+  copy_file_track "$PROJECT_DIR/config/hypr/hyprpaper.conf" "$HOME/.config/hypr/hyprpaper.conf"
+fi
 if [ -d "$PROJECT_DIR/assets/wallpapers/static" ]; then
   cp -rn "$PROJECT_DIR/assets/wallpapers/static/"* "$HOME/.local/share/arch-hyprland/wallpapers/static/" 2>/dev/null || true
+fi
+if [ -d "$HOME/.local/share/arch-hyprland/wallpapers/static" ]; then
+  cp -rn "$HOME/.local/share/arch-hyprland/wallpapers/static/"* "$HOME/.local/share/arch-hyprland/wallpapers/library/" 2>/dev/null || true
+fi
+
+if [ -d "$PROJECT_DIR/apps/settings-center" ]; then
+  echo "==> Installing Settings Center app..."
+  rm -rf "$HOME/.local/share/arch-hyprland/apps/settings-center"
+  copy_dir_contents_track "$PROJECT_DIR/apps/settings-center" "$HOME/.local/share/arch-hyprland/apps/settings-center"
+fi
+
+if [ -d "$PROJECT_DIR/localization" ]; then
+  echo "==> Installing localization files..."
+  copy_dir_contents_track "$PROJECT_DIR/localization" "$HOME/.local/share/arch-hyprland/localization"
+fi
+
+if [ -f "$PROJECT_DIR/VERSION" ]; then
+  copy_file_track "$PROJECT_DIR/VERSION" "$HOME/.local/share/arch-hyprland/VERSION"
 fi
 
 
@@ -227,16 +272,22 @@ copy_file_track "$PROJECT_DIR/scripts/ui/power-menu.sh" "$HOME/.local/bin/power-
 copy_file_track "$PROJECT_DIR/scripts/ui/screenshot.sh" "$HOME/.local/bin/screenshot.sh"
 copy_file_track "$PROJECT_DIR/scripts/system/volume.sh" "$HOME/.local/bin/volume.sh"
 copy_file_track "$PROJECT_DIR/scripts/system/brightness.sh" "$HOME/.local/bin/brightness.sh"
+# Compatibility layer: keep legacy Wofi menus while migrating to app-first Settings Center.
 copy_file_track "$PROJECT_DIR/scripts/ui/settings-menu.sh" "$HOME/.local/bin/settings-menu.sh"
 copy_file_track "$PROJECT_DIR/scripts/ui/settings-theme.sh" "$HOME/.local/bin/settings-theme.sh"
 copy_file_track "$PROJECT_DIR/scripts/ui/settings-waybar.sh" "$HOME/.local/bin/settings-waybar.sh"
+copy_file_track "$PROJECT_DIR/scripts/ui/waybar-restart.sh" "$HOME/.local/bin/waybar-restart.sh"
+copy_file_track "$PROJECT_DIR/scripts/ui/start-waybar.sh" "$HOME/.local/bin/start-waybar.sh"
 copy_file_track "$PROJECT_DIR/scripts/ui/settings-system.sh" "$HOME/.local/bin/settings-system.sh"
+copy_file_track "$PROJECT_DIR/scripts/ui/settings-center.sh" "$HOME/.local/bin/settings-center"
 copy_file_track "$PROJECT_DIR/scripts/ui/settings-dev.sh" "$HOME/.local/bin/settings-dev.sh"
 copy_file_track "$PROJECT_DIR/scripts/wallpaper/wallpaper-apply.sh" "$HOME/.local/bin/wallpaper-apply.sh"
 copy_file_track "$PROJECT_DIR/scripts/wallpaper/wallpaper-local.sh" "$HOME/.local/bin/wallpaper-local.sh"
 copy_file_track "$PROJECT_DIR/scripts/wallpaper/wallpaper-search.sh" "$HOME/.local/bin/wallpaper-search.sh"
 copy_file_track "$PROJECT_DIR/scripts/wallpaper/wallpaper-fetch.sh" "$HOME/.local/bin/wallpaper-fetch.sh"
+copy_file_track "$PROJECT_DIR/scripts/wallpaper/wallpaper-pexels.sh" "$HOME/.local/bin/wallpaper-pexels.sh"
 copy_file_track "$PROJECT_DIR/scripts/wallpaper/wallpaper-random.sh" "$HOME/.local/bin/wallpaper-random.sh"
+# Compatibility layer: legacy wallpaper menu redirects to settings-center.
 copy_file_track "$PROJECT_DIR/scripts/wallpaper/wallpaper-menu.sh" "$HOME/.local/bin/wallpaper-menu.sh"
 copy_file_track "$PROJECT_DIR/scripts/wallpaper/wallpaper-history.sh" "$HOME/.local/bin/wallpaper-history.sh"
 copy_file_track "$PROJECT_DIR/scripts/wallpaper/wallpaper-favorites.sh" "$HOME/.local/bin/wallpaper-favorites.sh"
@@ -244,6 +295,9 @@ copy_file_track "$PROJECT_DIR/scripts/wallpaper/wallpaper-favorite-add.sh" "$HOM
 copy_file_track "$PROJECT_DIR/scripts/wallpaper/wallpaper-settings.sh" "$HOME/.local/bin/wallpaper-settings.sh"
 copy_file_track "$PROJECT_DIR/scripts/wallpaper/wallpaper-preview.sh" "$HOME/.local/bin/wallpaper-preview.sh"
 copy_file_track "$PROJECT_DIR/scripts/wallpaper/wallpaper-video.sh" "$HOME/.local/bin/wallpaper-video.sh"
+copy_file_track "$PROJECT_DIR/scripts/wallpaper/wallpaper-video-apply.sh" "$HOME/.local/bin/wallpaper-video-apply.sh"
+copy_file_track "$PROJECT_DIR/scripts/wallpaper/wallpaper-video-local.sh" "$HOME/.local/bin/wallpaper-video-local.sh"
+copy_file_track "$PROJECT_DIR/scripts/wallpaper/wallpaper-stop-video.sh" "$HOME/.local/bin/wallpaper-stop-video.sh"
 copy_file_track "$PROJECT_DIR/doctor.sh" "$HOME/.local/bin/arch-hypr-doctor"
 copy_file_track "$PROJECT_DIR/backup.sh" "$HOME/.local/bin/arch-hypr-backup"
 copy_file_track "$PROJECT_DIR/restore.sh" "$HOME/.local/bin/arch-hypr-restore"
@@ -255,10 +309,16 @@ fi
 
 chmod +x "$HOME/.local/bin/"*.sh
 chmod +x "$HOME/.local/bin/arch-hypr-doctor" "$HOME/.local/bin/arch-hypr-backup" "$HOME/.local/bin/arch-hypr-restore" "$HOME/.local/bin/arch-hypr-update"
+chmod +x "$HOME/.local/bin/settings-center"
 
 echo "==> Ensuring local.conf exists..."
 touch "$HOME/.config/hypr/local.conf"
 add_file "$HOME/.config/hypr/local.conf"
+
+if [ -n "${WAYLAND_DISPLAY:-}${DISPLAY:-}" ] && [ -x "$HOME/.local/bin/start-waybar.sh" ]; then
+  echo "==> Waybar: takrorlanishlarsiz qayta ishga tushirish..."
+  "$HOME/.local/bin/start-waybar.sh" || true
+fi
 
 echo "==> Done."
 echo "Reload Hyprland with: hyprctl reload"

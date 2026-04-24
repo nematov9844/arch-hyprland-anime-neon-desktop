@@ -19,9 +19,8 @@ CONFIG_FILE="$HOME/.config/settings/config.json"
 
 case "$CHOICE" in
   "Reload Waybar")
-    kill_by_name waybar
-    waybar &
-    notify-send "Waybar" "Reloaded"
+    "$HOME/.local/bin/waybar-restart.sh"
+    notify-send "Waybar" "Qayta yuklandi"
     ;;
 
   "Toggle Top Bar")
@@ -30,15 +29,17 @@ case "$CHOICE" in
       TMP="$(mktemp)"
       jq '.waybar.top_enabled = false' "$CONFIG_FILE" > "$TMP"
       mv "$TMP" "$CONFIG_FILE"
-      kill_by_name waybar
-      notify-send "Waybar" "Top bar disabled"
+      pkill -f "waybar -c ${HOME}/.config/waybar/config.jsonc" 2>/dev/null || true
+      pkill -f "waybar -c ${HOME}/.config/waybar/config.generated.jsonc" 2>/dev/null || true
+      pkill -f "waybar -c ~/.config/waybar/config.jsonc" 2>/dev/null || true
+      pkill -f "waybar -c ~/.config/waybar/config.generated.jsonc" 2>/dev/null || true
+      notify-send "Waybar" "Yuqori panel o‘chirildi"
     else
       TMP="$(mktemp)"
       jq '.waybar.top_enabled = true' "$CONFIG_FILE" > "$TMP"
       mv "$TMP" "$CONFIG_FILE"
-      kill_by_name waybar
-      waybar &
-      notify-send "Waybar" "Top bar enabled"
+      "$HOME/.local/bin/start-waybar.sh" >/dev/null 2>&1 &
+      notify-send "Waybar" "Yuqori panel yoqildi"
     fi
     ;;
 

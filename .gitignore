@@ -4,3 +4,7 @@ node_modules/
 dist/
 build/
 *.bak
+__pycache__/
+*.pyc
+*.pyo
+.DS_Store
