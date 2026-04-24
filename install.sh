@@ -3,8 +3,36 @@
 set -e
 
 PROJECT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-PROFILE="${1:-default}"
+PROFILE="default"
 MANIFEST="$HOME/.config/arch-hyprland/manifest.json"
+SKIP_PACKAGES=0
+NO_AUR=0
+
+while [ $# -gt 0 ]; do
+  case "$1" in
+    --skip-packages)
+      SKIP_PACKAGES=1
+      shift
+      ;;
+    --no-aur)
+      NO_AUR=1
+      shift
+      ;;
+    --profile)
+      PROFILE="${2:-default}"
+      shift 2
+      ;;
+    default|frontend|backend|full)
+      PROFILE="$1"
+      shift
+      ;;
+    *)
+      echo "Unknown option: $1"
+      echo "Usage: bash install.sh [default|frontend|backend|full] [--profile <name>] [--skip-packages] [--no-aur]"
+      exit 1
+      ;;
+  esac
+done
 
 echo "==> Selected profile: $PROFILE"
 
@@ -13,20 +41,46 @@ init_manifest() {
   [ -f "$MANIFEST" ] || echo '{"installed_files":[],"installed_dirs":[]}' > "$MANIFEST"
 }
 
+safe_write_json_file() {
+  local temp_file="$1"
+  local target_file="$2"
+  if mv "$temp_file" "$target_file" 2>/dev/null; then
+    return 0
+  fi
+  if cp "$temp_file" "$target_file" 2>/dev/null; then
+    rm -f "$temp_file"
+    return 0
+  fi
+  rm -f "$temp_file"
+  return 1
+}
+
 add_file() {
   local path="$1"
   local tmp
-  tmp="$(mktemp)"
-  jq --arg p "$path" '.installed_files += [$p] | .installed_files |= unique' "$MANIFEST" > "$tmp"
-  mv "$tmp" "$MANIFEST"
+  tmp="$(mktemp "$(dirname "$MANIFEST")/.manifest.XXXXXX")"
+  if jq --arg p "$path" '.installed_files += [$p] | .installed_files |= unique' "$MANIFEST" > "$tmp"; then
+    if ! safe_write_json_file "$tmp" "$MANIFEST"; then
+      echo "==> [WARN] Failed to write manifest file entry: $path"
+    fi
+  else
+    rm -f "$tmp"
+    echo "==> [WARN] jq failed while updating manifest file entry: $path"
+  fi
 }
 
 add_dir() {
   local path="$1"
   local tmp
-  tmp="$(mktemp)"
-  jq --arg p "$path" '.installed_dirs += [$p] | .installed_dirs |= unique' "$MANIFEST" > "$tmp"
-  mv "$tmp" "$MANIFEST"
+  tmp="$(mktemp "$(dirname "$MANIFEST")/.manifest.XXXXXX")"
+  if jq --arg p "$path" '.installed_dirs += [$p] | .installed_dirs |= unique' "$MANIFEST" > "$tmp"; then
+    if ! safe_write_json_file "$tmp" "$MANIFEST"; then
+      echo "==> [WARN] Failed to write manifest directory entry: $path"
+    fi
+  else
+    rm -f "$tmp"
+    echo "==> [WARN] jq failed while updating manifest directory entry: $path"
+  fi
 }
 
 mkdir_track() {
@@ -60,51 +114,41 @@ copy_dir_contents_track() {
 
 install_packages() {
   local file="$1"
-  local mode="${2:-required}"
-  local aur_helper="$3"
-
-  install_one_package() {
-    local pkg="$1"
-    local pkg_mode="$2"
-    local helper="$3"
-    local ans
-
-    if sudo pacman -Si "$pkg" >/dev/null 2>&1; then
-      sudo pacman -S --needed --noconfirm "$pkg"
-      return 0
-    fi
-
-    echo "==> [WARN] Package not found in official repo: $pkg"
-
-    if [ -n "$helper" ]; then
-      read -r -p "Try installing '$pkg' with $helper (AUR)? (y/N): " ans
-      if [[ "$ans" =~ ^[Yy]$ ]]; then
-        if "$helper" -S --needed "$pkg"; then
-          return 0
-        fi
-        echo "==> [WARN] AUR install failed: $pkg"
-      fi
-    fi
-
-    if [ "$pkg_mode" = "required" ]; then
-      echo "==> [ERR] Required package was not installed: $pkg"
-      exit 1
-    fi
-
-    echo "==> [WARN] Skipping optional package: $pkg"
-    return 0
-  }
-
+  local aur_helper="$2"
   while read -r pkg; do
     [ -z "$pkg" ] && continue
     case "$pkg" in
       \#*) continue ;;
     esac
-    install_one_package "$pkg" "$mode" "$aur_helper"
+    try_install_package "$pkg" "$aur_helper"
   done < "$file"
 }
 
+try_install_package() {
+  local pkg="$1"
+  local helper="$2"
+  if sudo pacman -S --needed --noconfirm "$pkg" >/dev/null 2>&1; then
+    echo "==> [OK] Installed package: $pkg"
+    return 0
+  fi
+
+  echo "==> [WARN] Official package install failed: $pkg"
+
+  if [ "$NO_AUR" -eq 0 ] && [ -n "$helper" ]; then
+    if "$helper" -S --needed --noconfirm "$pkg" >/dev/null 2>&1; then
+      echo "==> [OK] Installed from AUR ($helper): $pkg"
+      return 0
+    fi
+    echo "==> [WARN] AUR install failed: $pkg"
+  fi
+  return 0
+}
+
 detect_aur_helper() {
+  if [ "$NO_AUR" -eq 1 ]; then
+    echo ""
+    return
+  fi
   if command -v yay >/dev/null 2>&1; then
     echo "yay"
     return
@@ -114,6 +158,32 @@ detect_aur_helper() {
     return
   fi
   echo ""
+}
+
+check_cmd_present() {
+  local cmd="$1"
+  command -v "$cmd" >/dev/null 2>&1
+}
+
+verify_command_group() {
+  local label="$1"
+  local required="$2"
+  shift 2
+  local missing=0
+  local cmd
+  for cmd in "$@"; do
+    if check_cmd_present "$cmd"; then
+      echo "==> [OK] $label command: $cmd"
+    else
+      if [ "$required" = "1" ]; then
+        echo "==> [ERR] Missing required command: $cmd"
+      else
+        echo "==> [WARN] Missing $label command: $cmd"
+      fi
+      missing=$((missing + 1))
+    fi
+  done
+  return "$missing"
 }
 
 case "$PROFILE" in
@@ -138,47 +208,51 @@ esac
 
 AUR_HELPER="$(detect_aur_helper)"
 
-echo "==> Installing base packages..."
-install_packages "$PROJECT_DIR/packages/base.txt" "required" "$AUR_HELPER"
-
-read -r -p "Install UI packages? (Y/n): " ui_ans
-if [[ ! "$ui_ans" =~ ^[Nn]$ ]]; then
-  echo "==> Installing UI packages..."
-  install_packages "$PROJECT_DIR/packages/ui.txt" "optional" "$AUR_HELPER"
+if [ "$SKIP_PACKAGES" -eq 1 ]; then
+  echo "==> Skipping package installation (--skip-packages)"
 else
-  echo "==> Skipping UI packages"
-fi
+  echo "==> Installing base packages..."
+  install_packages "$PROJECT_DIR/packages/base.txt" "$AUR_HELPER"
 
-echo "$PROFILE_MESSAGE"
-case "$PROFILE" in
-  frontend)
-    read -r -p "Install frontend dev packages? (Y/n): " fe_ans
-    if [[ ! "$fe_ans" =~ ^[Nn]$ ]]; then
-      install_packages "$PROJECT_DIR/packages/dev-frontend.txt" "optional" "$AUR_HELPER"
-    fi
-    ;;
-  backend)
-    read -r -p "Install backend dev packages? (Y/n): " be_ans
-    if [[ ! "$be_ans" =~ ^[Nn]$ ]]; then
-      install_packages "$PROJECT_DIR/packages/dev-backend.txt" "optional" "$AUR_HELPER"
-    fi
-    ;;
-  full)
-    read -r -p "Install frontend dev packages? (Y/n): " fe_ans
-    if [[ ! "$fe_ans" =~ ^[Nn]$ ]]; then
-      install_packages "$PROJECT_DIR/packages/dev-frontend.txt" "optional" "$AUR_HELPER"
-    fi
-    read -r -p "Install backend dev packages? (Y/n): " be_ans
-    if [[ ! "$be_ans" =~ ^[Nn]$ ]]; then
-      install_packages "$PROJECT_DIR/packages/dev-backend.txt" "optional" "$AUR_HELPER"
-    fi
-    ;;
-esac
+  read -r -p "Install UI packages? (Y/n): " ui_ans
+  if [[ ! "$ui_ans" =~ ^[Nn]$ ]]; then
+    echo "==> Installing UI packages..."
+    install_packages "$PROJECT_DIR/packages/ui.txt" "$AUR_HELPER"
+  else
+    echo "==> Skipping UI packages"
+  fi
 
-read -r -p "Install optional packages? (y/N): " opt
-if [[ "$opt" =~ ^[Yy]$ ]]; then
-  echo "==> Installing optional packages..."
-  install_packages "$PROJECT_DIR/packages/optional.txt" "optional" "$AUR_HELPER"
+  echo "$PROFILE_MESSAGE"
+  case "$PROFILE" in
+    frontend)
+      read -r -p "Install frontend dev packages? (Y/n): " fe_ans
+      if [[ ! "$fe_ans" =~ ^[Nn]$ ]]; then
+        install_packages "$PROJECT_DIR/packages/dev-frontend.txt" "$AUR_HELPER"
+      fi
+      ;;
+    backend)
+      read -r -p "Install backend dev packages? (Y/n): " be_ans
+      if [[ ! "$be_ans" =~ ^[Nn]$ ]]; then
+        install_packages "$PROJECT_DIR/packages/dev-backend.txt" "$AUR_HELPER"
+      fi
+      ;;
+    full)
+      read -r -p "Install frontend dev packages? (Y/n): " fe_ans
+      if [[ ! "$fe_ans" =~ ^[Nn]$ ]]; then
+        install_packages "$PROJECT_DIR/packages/dev-frontend.txt" "$AUR_HELPER"
+      fi
+      read -r -p "Install backend dev packages? (Y/n): " be_ans
+      if [[ ! "$be_ans" =~ ^[Nn]$ ]]; then
+        install_packages "$PROJECT_DIR/packages/dev-backend.txt" "$AUR_HELPER"
+      fi
+      ;;
+  esac
+
+  read -r -p "Install optional packages? (y/N): " opt
+  if [[ "$opt" =~ ^[Yy]$ ]]; then
+    echo "==> Installing optional packages..."
+    install_packages "$PROJECT_DIR/packages/optional.txt" "$AUR_HELPER"
+  fi
 fi
 
 init_manifest
@@ -310,6 +384,7 @@ fi
 chmod +x "$HOME/.local/bin/"*.sh
 chmod +x "$HOME/.local/bin/arch-hypr-doctor" "$HOME/.local/bin/arch-hypr-backup" "$HOME/.local/bin/arch-hypr-restore" "$HOME/.local/bin/arch-hypr-update"
 chmod +x "$HOME/.local/bin/settings-center"
+chmod +x "$PROJECT_DIR/install.sh" "$PROJECT_DIR/update.sh" "$PROJECT_DIR/doctor.sh" "$PROJECT_DIR/backup.sh" "$PROJECT_DIR/restore.sh" "$PROJECT_DIR/uninstall.sh"
 
 echo "==> Ensuring local.conf exists..."
 touch "$HOME/.config/hypr/local.conf"
@@ -320,5 +395,29 @@ if [ -n "${WAYLAND_DISPLAY:-}${DISPLAY:-}" ] && [ -x "$HOME/.local/bin/start-way
   "$HOME/.local/bin/start-waybar.sh" || true
 fi
 
+echo "==> Verifying runtime commands..."
+required_missing=0
+recommended_missing=0
+optional_missing=0
+
+verify_command_group "required" 1 \
+  hyprctl waybar wofi kitty jq curl || required_missing=$?
+verify_command_group "recommended" 0 \
+  hyprlock hyprpaper hypridle grim slurp wl-copy pamixer brightnessctl notify-send || recommended_missing=$?
+verify_command_group "optional" 0 \
+  mpvpaper ffmpeg blueman-manager nm-applet || optional_missing=$?
+
+echo
+echo "== Package/command summary =="
+echo "Installed attempts: done"
+echo "WARN missing recommended: $recommended_missing"
+echo "WARN missing optional: $optional_missing"
+echo "ERR missing required: $required_missing"
+
 echo "==> Done."
 echo "Reload Hyprland with: hyprctl reload"
+
+if [ "$required_missing" -gt 0 ]; then
+  echo "==> [ERR] Install completed with missing required commands."
+  exit 1
+fi
